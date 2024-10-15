@@ -3,12 +3,15 @@ from config import Config
 from models import db, SoilData
 from flask_migrate import Migrate
 from sqlalchemy import func
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config.from_object(Config)
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/soil_sensor_db'
 db.init_app(app)
 migrate = Migrate(app, db)
+
+# Impor model
+from models import SoilData, Pump
 
 @app.route('/')
 def index():
@@ -132,6 +135,51 @@ def daily_data():
                            avg_nitrogen=avg_nitrogen,
                            avg_phosphorus=avg_phosphorus,
                            avg_potassium=avg_potassium)
+
+@app.route('/pump')
+def pump_data():
+    data = Pump.query.order_by(Pump.timestamp.desc()).all()
+    
+    # Memformat timestamp
+    timestamps = [d.timestamp.strftime('%Y-%m-%d %H:%M:%S') for d in data]
+    air = [d.air for d in data]
+    nutrisi = [d.nutrisi for d in data]
+    tanaman = [d.tanaman for d in data]
+    tanaman_no = [d.tanaman_no for d in data]
+    
+    return render_template('pump.html',
+                           data=data,
+                           timestamps=timestamps,
+                           air=air,
+                           nutrisi=nutrisi,
+                           tanaman=tanaman,
+                           tanaman_no=tanaman_no)
+
+
+@app.route('/add_pump_data', methods=['POST'])
+def add_pump_data():
+    # Mendapatkan data dari form POST
+    air = request.form.get('air')
+    nutrisi = request.form.get('nutrisi')
+    tanaman = request.form.get('tanaman')
+    tanaman_no = request.form.get('tanaman_no')
+
+    # Membuat objek Pump baru
+    new_pump_data = Pump(
+        air=air,
+        nutrisi=nutrisi,
+        tanaman=tanaman,
+        tanaman_no=tanaman_no
+    )
+
+    try:
+        db.session.add(new_pump_data)
+        db.session.commit()
+        return redirect(url_for('pump_data'))
+    except Exception as e:
+        db.session.rollback()
+        return f'Terjadi kesalahan: {e}', 500
+
 
 
 @app.route('/add_data', methods=['POST'])

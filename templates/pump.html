@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Pompa</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <h1>Data Pompa</h1>
+    <p><a href="{{ url_for('index') }}">Kembali ke Halaman Utama</a></p>
+
+    <table>
+        <tr>
+            <th>Waktu</th>
+            <th>Air (L)</th>
+            <th>Nutrisi (L)</th>
+            <th>Tanaman</th>
+            <th>No. Tanaman</th>
+        </tr>
+        {% for d in data %}
+        <tr>
+            <td>{{ d.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ d.air }}</td>
+            <td>{{ d.nutrisi }}</td>
+            <td>{{ d.tanaman }}</td>
+            <td>{{ d.tanaman_no }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Grafik -->
+    <h2>Grafik Penggunaan Air dan Nutrisi</h2>
+    <div id="pump_graph"></div>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            var timestamps = {{ timestamps | tojson
+        }};
+        var air = {{ air | tojson }};
+        var nutrisi = {{ nutrisi | tojson }};
+
+        var air_trace = {
+            x: timestamps,
+            y: air,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Air'
+        };
+
+        var nutrisi_trace = {
+            x: timestamps,
+            y: nutrisi,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Nutrisi'
+        };
+
+        var data = [air_trace, nutrisi_trace];
+
+        var layout = {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Volume (L)' },
+            title: 'Volume Air dan Nutrisi yang Dikeluarkan'
+        };
+
+        Plotly.newPlot('pump_graph', data, layout);
+        };
+    </script>
+</body>
+
+</html>
