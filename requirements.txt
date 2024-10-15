@@ -1,0 +1,5 @@
+Flask
+Flask_SQLAlchemy
+Flask_Migrate
+mysql-connector-python
+plotly

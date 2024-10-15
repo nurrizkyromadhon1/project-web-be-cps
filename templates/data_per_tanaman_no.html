@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Tanaman Nomor {{ tanaman_no }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <h1>Data Tanaman Nomor {{ tanaman_no }}</h1>
+    <p><a href="{{ url_for('index') }}">Kembali ke Halaman Utama</a></p>
+
+    <!-- Tabel Data -->
+    <table>
+        <tr>
+            <th>Waktu</th>
+            <th>Suhu (&deg;C)</th>
+            <th>Kelembaban (%)</th>
+            <th>pH</th>
+            <th>Konduktivitas (EC)</th>
+            <th>Nitrogen</th>
+            <th>Fosfor</th>
+            <th>Kalium</th>
+            <th>Tanaman</th>
+            <th>No. Tanaman</th>
+        </tr>
+        {% for d in data %}
+        <tr>
+            <td>{{ d.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ d.temperature }}</td>
+            <td>{{ d.moisture }}</td>
+            <td>{{ d.pH }}</td>
+            <td>{{ d.conductivity }}</td>
+            <td>{{ d.nitrogen }}</td>
+            <td>{{ d.phosphorus }}</td>
+            <td>{{ d.potassium }}</td>
+            <td>{{ d.tanaman }}</td>
+            <td>{{ d.tanaman_no }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Grafik -->
+    <h2>Grafik Parameter untuk Tanaman Nomor {{ tanaman_no }}</h2>
+
+    <!-- Grafik Suhu -->
+    <h3>Grafik Suhu</h3>
+    <div id="temperature_graph"></div>
+
+    <!-- Grafik Kelembaban -->
+    <h3>Grafik Kelembaban</h3>
+    <div id="moisture_graph"></div>
+
+    <!-- Grafik pH -->
+    <h3>Grafik pH</h3>
+    <div id="ph_graph"></div>
+
+    <!-- Tambahkan grafik lainnya sesuai kebutuhan -->
+
+    <script type="text/javascript">
+        window.onload = function () {
+            // Mengambil data dari template
+            var timestamps = {{ timestamps | tojson
+        }};
+        var temperature = {{ temperature | tojson }};
+        var moisture = {{ moisture | tojson }};
+        var pH = {{ pH | tojson }};
+        // Data lainnya...
+
+        // Fungsi untuk membuat grafik
+        function createGraph(div_id, y_data, y_title) {
+            var data = [{
+                x: timestamps,
+                y: y_data,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: y_title
+            }];
+
+            var layout = {
+                xaxis: { title: 'Waktu' },
+                yaxis: { title: y_title },
+                title: y_title + ' Tanaman Nomor {{ tanaman_no }}'
+            };
+
+            Plotly.newPlot(div_id, data, layout);
+        }
+
+        // Membuat grafik untuk setiap parameter
+        createGraph('temperature_graph', temperature, 'Suhu (&deg;C)');
+        createGraph('moisture_graph', moisture, 'Kelembaban (%)');
+        createGraph('ph_graph', pH, 'pH');
+            // Panggil fungsi untuk parameter lainnya
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Semua Data Sensor Tanah</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Semua Data Sensor Tanah</h1>
+    <table>
+        <tr>
+            <th>Waktu</th>
+            <th>Suhu (&deg;C)</th>
+            <th>Kelembaban (%)</th>
+            <th>pH</th>
+            <th>Konduktivitas (EC)</th>
+            <th>Nitrogen</th>
+            <th>Fosfor</th>
+            <th>Kalium</th>
+        </tr>
+        {% for d in data %}
+        <tr>
+            <td>{{ d.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ d.temperature }}</td>
+            <td>{{ d.moisture }}</td>
+            <td>{{ d.pH }}</td>
+            <td>{{ d.conductivity }}</td>
+            <td>{{ d.nitrogen }}</td>
+            <td>{{ d.phosphorus }}</td>
+            <td>{{ d.potassium }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Kembali ke Halaman Utama</a>
+</body>
+
+</html>

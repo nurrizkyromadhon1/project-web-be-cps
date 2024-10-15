@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Harian Sensor Tanah</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <h1>Data Harian Sensor Tanah</h1>
+    <p><a href="{{ url_for('index') }}">Kembali ke Halaman Utama</a></p>
+
+    <!-- Tabel Data Harian -->
+    <table>
+        <tr>
+            <th>Tanggal</th>
+            <th>Rata-rata Suhu (&deg;C)</th>
+            <th>Rata-rata Kelembaban (%)</th>
+            <th>Rata-rata pH</th>
+            <th>Rata-rata Konduktivitas (EC)</th>
+            <th>Rata-rata Nitrogen</th>
+            <th>Rata-rata Fosfor</th>
+            <th>Rata-rata Kalium</th>
+        </tr>
+        {% for i in range(dates|length) %}
+        <tr>
+            <td>{{ dates[i] }}</td>
+            <td>{{ "%.2f"|format(avg_temperature[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_moisture[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_pH[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_conductivity[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_nitrogen[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_phosphorus[i]) }}</td>
+            <td>{{ "%.2f"|format(avg_potassium[i]) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Grafik Harian -->
+    <!-- Grafik akan ditambahkan di sini -->
+
+    <!-- Div untuk grafik -->
+    <h2>Grafik Rata-rata Suhu Harian</h2>
+    <div id="avg_temperature_graph"></div>
+
+    <h2>Grafik Rata-rata Kelembaban Harian</h2>
+    <div id="avg_moisture_graph"></div>
+
+    <h2>Grafik Rata-rata pH Harian</h2>
+    <div id="avg_pH_graph"></div>
+
+    <h2>Grafik Rata-rata Konduktivitas Harian</h2>
+    <div id="avg_conductivity_graph"></div>
+
+    <h2>Grafik Rata-rata Nitrogen Harian</h2>
+    <div id="avg_nitrogen_graph"></div>
+
+    <h2>Grafik Rata-rata Fosfor Harian</h2>
+    <div id="avg_phosphorus_graph"></div>
+
+    <h2>Grafik Rata-rata Kalium Harian</h2>
+    <div id="avg_potassium_graph"></div>
+
+    <script type="text/javascript">
+        // Mengambil data dari template ke JavaScript menggunakan tojson
+        var dates = {{ dates | tojson }};
+        var avg_temperature = {{ avg_temperature | tojson }};
+        var avg_moisture = {{ avg_moisture | tojson }};
+        var avg_pH = {{ avg_pH | tojson }};
+        var avg_conductivity = {{ avg_conductivity | tojson }};
+        var avg_nitrogen = {{ avg_nitrogen | tojson }};
+        var avg_phosphorus = {{ avg_phosphorus | tojson }};
+        var avg_potassium = {{ avg_potassium | tojson }};
+
+        // Fungsi untuk membuat grafik
+        function createGraph(div_id, y_data, y_title) {
+            var data = [{
+                x: dates,
+                y: y_data,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: y_title
+            }];
+
+            var layout = {
+                xaxis: { title: 'Tanggal' },
+                yaxis: { title: y_title },
+                title: y_title + ' dari Waktu ke Waktu'
+            };
+
+            Plotly.newPlot(div_id, data, layout);
+        }
+
+        // Membuat grafik untuk setiap parameter
+        createGraph('avg_temperature_graph', avg_temperature, 'Rata-rata Suhu (&deg;C)');
+        createGraph('avg_moisture_graph', avg_moisture, 'Rata-rata Kelembaban (%)');
+        createGraph('avg_pH_graph', avg_pH, 'Rata-rata pH');
+        createGraph('avg_conductivity_graph', avg_conductivity, 'Rata-rata Konduktivitas (EC)');
+        createGraph('avg_nitrogen_graph', avg_nitrogen, 'Rata-rata Nitrogen');
+        createGraph('avg_phosphorus_graph', avg_phosphorus, 'Rata-rata Fosfor');
+        createGraph('avg_potassium_graph', avg_potassium, 'Rata-rata Kalium');
+    </script>
+
+    
+
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Data Sensor Tanah</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <h1>Data Sensor Tanah Terbaru</h1>
+    <table>
+        <tr>
+            <th>Waktu</th>
+            <th>Suhu (&deg;C)</th>
+            <th>Kelembaban (%)</th>
+            <th>pH</th>
+            <th>Konduktivitas (EC)</th>
+            <th>Nitrogen</th>
+            <th>Fosfor</th>
+            <th>Kalium</th>
+        </tr>
+        {% for d in data %}
+        <tr>
+            <td>{{ d.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ d.temperature }}</td>
+            <td>{{ d.moisture }}</td>
+            <td>{{ d.pH }}</td>
+            <td>{{ d.conductivity }}</td>
+            <td>{{ d.nitrogen }}</td>
+            <td>{{ d.phosphorus }}</td>
+            <td>{{ d.potassium }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="{{ url_for('daily_data') }}">Lihat Data Harian</a></p>
+    <h2>Lihat Data Berdasarkan Tanaman</h2>
+    <ul>
+        <li><a href="{{ url_for('data_per_tanaman', jenis_tanaman='cabai') }}">Data Tanaman Cabai</a></li>
+        <li><a href="{{ url_for('data_per_tanaman', jenis_tanaman='kemangi') }}">Data Tanaman Kemangi</a></li>
+    </ul>
+    
+    <h2>Lihat Data Berdasarkan Nomor Tanaman</h2>
+    <ul>
+        <li><a href="{{ url_for('data_per_tanaman_no', tanaman_no=1) }}">Data Tanaman Nomor 1</a></li>
+        <li><a href="{{ url_for('data_per_tanaman_no', tanaman_no=2) }}">Data Tanaman Nomor 2</a></li>
+    </ul>
+    <h2>Lihat Data Berdasarkan Jenis dan Nomor Tanaman</h2>
+    <ul>
+        <li><a href="{{ url_for('data_tanaman', jenis_tanaman='cabai', tanaman_no=1) }}">Data Cabai Tanaman 1</a></li>
+        <li><a href="{{ url_for('data_tanaman', jenis_tanaman='cabai', tanaman_no=2) }}">Data Cabai Tanaman 2</a></li>
+        <li><a href="{{ url_for('data_tanaman', jenis_tanaman='kemangi', tanaman_no=1) }}">Data Kemangi Tanaman 1</a></li>
+        <li><a href="{{ url_for('data_tanaman', jenis_tanaman='kemangi', tanaman_no=2) }}">Data Kemangi Tanaman 2</a></li>
+        <!-- Tambahkan link untuk jenis tanaman dan nomor tanaman lainnya -->
+    </ul>
+
+
+
+    <h2>Grafik Parameter Sensor Tanah</h2>
+
+    <!-- Grafik Suhu -->
+    <h3>Grafik Suhu (&deg;C) dari Waktu ke Waktu</h3>
+    <div id="temperature_graph"></div>
+
+    <!-- Grafik Kelembaban -->
+    <h3>Grafik Kelembaban (%) dari Waktu ke Waktu</h3>
+    <div id="moisture_graph"></div>
+
+    <!-- Grafik pH -->
+    <h3>Grafik pH dari Waktu ke Waktu</h3>
+    <div id="ph_graph"></div>
+
+    <!-- Grafik Konduktivitas -->
+    <h3>Grafik Konduktivitas (EC) dari Waktu ke Waktu</h3>
+    <div id="conductivity_graph"></div>
+
+    <!-- Grafik Nitrogen -->
+    <h3>Grafik Nitrogen dari Waktu ke Waktu</h3>
+    <div id="nitrogen_graph"></div>
+
+    <!-- Grafik Fosfor -->
+    <h3>Grafik Fosfor dari Waktu ke Waktu</h3>
+    <div id="phosphorus_graph"></div>
+
+    <!-- Grafik Kalium -->
+    <h3>Grafik Kalium dari Waktu ke Waktu</h3>
+    <div id="potassium_graph"></div>
+
+    <script type="text/javascript">
+        var timestamps = [{% for d in data %}'{{ d.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+
+        // Data Suhu
+        var temperature = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.temperature }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Suhu'
+        };
+
+        // Data Kelembaban
+        var moisture = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.moisture }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Kelembaban'
+        };
+
+        // Data pH
+        var pH = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.pH }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'pH'
+        };
+
+        // Data Konduktivitas
+        var conductivity = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.conductivity }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Konduktivitas'
+        };
+
+        // Data Nitrogen
+        var nitrogen = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.nitrogen }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Nitrogen'
+        };
+
+        // Data Fosfor
+        var phosphorus = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.phosphorus }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Fosfor'
+        };
+
+        // Data Kalium
+        var potassium = {
+            x: timestamps,
+            y: [{% for d in data %}{{ d.potassium }}{% if not loop.last %}, {% endif %} {% endfor %}],
+        type: 'scatter',
+            mode: 'lines+markers',
+                name: 'Kalium'
+        };
+
+        // Plot Grafik Suhu
+        Plotly.newPlot('temperature_graph', [temperature], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Suhu (&deg;C)' }
+        });
+
+        // Plot Grafik Kelembaban
+        Plotly.newPlot('moisture_graph', [moisture], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Kelembaban (%)' }
+        });
+
+        // Plot Grafik pH
+        Plotly.newPlot('ph_graph', [pH], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'pH' }
+        });
+
+        // Plot Grafik Konduktivitas
+        Plotly.newPlot('conductivity_graph', [conductivity], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Konduktivitas (EC)' }
+        });
+
+        // Plot Grafik Nitrogen
+        Plotly.newPlot('nitrogen_graph', [nitrogen], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Nitrogen' }
+        });
+
+        // Plot Grafik Fosfor
+        Plotly.newPlot('phosphorus_graph', [phosphorus], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Fosfor' }
+        });
+
+        // Plot Grafik Kalium
+        Plotly.newPlot('potassium_graph', [potassium], {
+            xaxis: { title: 'Waktu' },
+            yaxis: { title: 'Kalium' }
+        });
+
+    </script>
+</body>
+
+</html>

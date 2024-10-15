@@ -1,0 +1,53 @@
+Saya seorang mahasiswa teknik informatika, dan saya dikasih tugas project membuat website back end dengan menampilkan data dari soil sensor detail seperti dibawah ini :
+SOIL sensor with display and recording support to graph and data logging is for soil temperature and moisture measurement, PH, Conductivity (EC), Nitrogen, Phosporus, Potassium compared with the original German high-precision sensors and soil drying method of weighing the actual calibration, high precision, fast response, stable output. By the soil salt content of small, suitable for all kinds of soil. Long-term buried in the soil, resistant to long-term electrolysis, corrosion resistance, vacuum potting, completely waterproof.
+
+membuat website menggunakan framework flask dan menggunakan database mysql
+
+from flask import Flask, render_template, request, redirect, url_for
+from config import Config
+from models import db, SoilData
+from flask_migrate import Migrate
+
+app = Flask(__name__)
+app.config.from_object(Config)
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
+@app.route('/')
+def index():
+    data = SoilData.query.order_by(SoilData.timestamp.desc()).limit(10).all()
+    return render_template('index.html', data=data)
+
+@app.route('/data')
+def data():
+    data = SoilData.query.all()
+    return render_template('data.html', data=data)
+
+@app.route('/add_data', methods=['POST'])
+def add_data():
+    temperature = request.form.get('temperature')
+    moisture = request.form.get('moisture')
+    pH = request.form.get('pH')
+    conductivity = request.form.get('conductivity')
+    nitrogen = request.form.get('nitrogen')
+    phosphorus = request.form.get('phosphorus')
+    potassium = request.form.get('potassium')
+
+    new_data = SoilData(
+        temperature=temperature,
+        moisture=moisture,
+        pH=pH,
+        conductivity=conductivity,
+        nitrogen=nitrogen,
+        phosphorus=phosphorus,
+        potassium=potassium
+    )
+
+    db.session.add(new_data)
+    db.session.commit()
+
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    app.run(debug=True)
