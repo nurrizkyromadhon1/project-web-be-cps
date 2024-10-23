@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 15 Okt 2024 pada 10.03
+-- Waktu pembuatan: 23 Okt 2024 pada 13.55
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `soil_sensor_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `pump`
+--
+
+CREATE TABLE `pump` (
+  `id` int(11) NOT NULL,
+  `air` float NOT NULL,
+  `nutrisi` float NOT NULL,
+  `tanaman` varchar(50) NOT NULL,
+  `tanaman_no` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `pump`
+--
+
+INSERT INTO `pump` (`id`, `air`, `nutrisi`, `tanaman`, `tanaman_no`, `timestamp`) VALUES
+(1, 1.5, 0.2, 'cabai', 1, '2024-10-15 20:28:14');
 
 -- --------------------------------------------------------
 
@@ -58,6 +80,12 @@ INSERT INTO `soil_data` (`id`, `temperature`, `moisture`, `pH`, `conductivity`, 
 --
 
 --
+-- Indeks untuk tabel `pump`
+--
+ALTER TABLE `pump`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `soil_data`
 --
 ALTER TABLE `soil_data`
@@ -66,6 +94,12 @@ ALTER TABLE `soil_data`
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
+
+--
+-- AUTO_INCREMENT untuk tabel `pump`
+--
+ALTER TABLE `pump`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `soil_data`
